@@ -1,7 +1,7 @@
 import axios from "axios";
 
 async function getGenderPrediction(nameParams) {
-  if (!nameParams || nameParams.trim() === "") {
+  if (!nameParams) {
     const error = new Error("Missing or empty name parameter");
     error.statusCode = 400;
     throw error;
@@ -14,7 +14,7 @@ async function getGenderPrediction(nameParams) {
   }
 
   const response = await axios.get(
-    `${process.env.GENDERIZER_API_KEY}?name=${nameParams}`
+    `${process.env.GENDERIZER_API_URL}?name=${nameParams}`
   );
 
   const { name, gender, probability, count } = response.data;

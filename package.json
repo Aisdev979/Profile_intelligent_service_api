@@ -14,7 +14,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "modules",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/Aisdev979/Genderizer_power_data_api/issues"
   },

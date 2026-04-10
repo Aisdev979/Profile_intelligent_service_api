@@ -14,7 +14,7 @@ async function getGenderPrediction(nameParams) {
   }
 
   const response = await axios.get(
-    `https://api.genderize.io?name=${nameParams}`
+    `${process.env.GENDERIZER_API_KEY}?name=${nameParams}`
   );
 
   const { name, gender, probability, count } = response.data;

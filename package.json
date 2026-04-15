@@ -1,6 +1,6 @@
 {
-  "name": "genderizer_power_data_api",
-  "version": "1.0.0",
+  "name": "profile_intelligent_service_api",
+  "version": "2.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -9,21 +9,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Aisdev979/Genderizer_power_data_api.git"
+    "url": "git+https://github.com/Aisdev979/Profile_intelligent_service_api.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/Aisdev979/Genderizer_power_data_api/issues"
+    "url": "https://github.com/Aisdev979/Profile_intelligent_service_api/issues"
   },
-  "homepage": "https://github.com/Aisdev979/Genderizer_power_data_api#readme",
+  "homepage": "https://github.com/Aisdev979/Profile_intelligent_service_api#readme",
   "dependencies": {
     "axios": "^1.15.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongoose": "^9.4.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

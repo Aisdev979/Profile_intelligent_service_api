@@ -8,8 +8,14 @@ const app = express();
 dotenv.config()
 
 app.use(cors());
+app.use(express.json());
 
 app.use("/", genderPredictionRoute);
+app.use((req, res, next) => {
+    const error = new Error("Route not found");
+    error.statusCode = 404;
+    next(error);
+});
 
 app.use(errorMiddleware);
 

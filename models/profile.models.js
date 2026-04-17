@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { v7 as uuidv7 } from "uuid";
 
 const profileSchema = new mongoose.Schema({
-  publicId: {
+  id: {
     type: String,
     default: uuidv7,
     unique: true,

@@ -7,10 +7,10 @@ const errorMiddleware = (err, req, res, next) => {
     }
 
     // Mongoose duplicate key
-    if (err.code === 11000) {
+   /*  if (err.code === 11000) {
         err = new Error("Duplicated field value entered");
         err.status = 400;
-    }
+    } */
 
     // Mongoose validation error
     if (err.name === "ValidationError") {

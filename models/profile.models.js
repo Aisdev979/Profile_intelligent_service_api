@@ -5,7 +5,6 @@ const profileSchema = new mongoose.Schema({
   id: {
     type: String,
     default: uuidv7,
-    unique: true,
   },
 
   name: {
@@ -70,6 +69,20 @@ const profileSchema = new mongoose.Schema({
   },
 },
 { timestamps: true });
+
+// 1. Fast lookup by id (primary API access)
+profileSchema.index({ id: 1 }, { unique: true });
+
+// 2. Prevent duplicate names + fast search
+profileSchema.index({ name: 1 });
+
+// 3. Query optimization for filters (HNG-style endpoint)
+profileSchema.index({
+  country_id: 1,
+  gender: 1,
+  age_group: 1,
+});
+
 
 const Profile = mongoose.model("Profile", profileSchema);
 

@@ -31,12 +31,6 @@ const profileSchema = new mongoose.Schema({
     max: [1, "Gender probability cannot be greater than 1"],
   },
 
-  sample_size: {
-    type: Number,
-    required: [true, "Sample size is required"],
-    min: [0, "Sample size cannot be negative"],
-  },
-
   age: {
     type: Number,
     required: [true, "Age is required"],
@@ -61,6 +55,11 @@ const profileSchema = new mongoose.Schema({
     maxlength: [2, "Country ID must be 2 characters"],
   },
 
+  country_name: {
+    type: String,
+    required: [true, "Country name is required"],
+  },
+
   country_probability: {
     type: Number,
     required: [true, "Country probability is required"],
@@ -74,7 +73,7 @@ const profileSchema = new mongoose.Schema({
 profileSchema.index({ id: 1 }, { unique: true });
 
 // 2. Prevent duplicate names + fast search
-profileSchema.index({ name: 1 });
+profileSchema.index({ name: 1 }, { unique: true });
 
 // 3. Query optimization for filters (HNG-style endpoint)
 profileSchema.index({

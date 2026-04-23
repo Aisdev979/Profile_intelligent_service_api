@@ -5,15 +5,15 @@ async function getGenderPrediction(nameParams) {
     `${process.env.GENDERIZER_API_URL}?name=${nameParams}`
   );
 
-  const { name, gender, probability, count } = response.data;
+  const { name, gender, probability } = response.data;
 
-  if (gender === null || count === 0) {
+  if (gender === null) {
     const error = new Error("Genderizer API did not return a valid gender prediction for the provided name");
     error.statusCode = 502;
     throw error;
   }
 
-  return { name, gender, probability, count };
+  return { name, gender, probability };
 }
 
 export default getGenderPrediction;

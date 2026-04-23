@@ -2,6 +2,7 @@ import getNameNationality from "../utilis/nationalize.js";
 import getNameAge from "../utilis/agify.js";
 import getGenderPrediction from "../utilis/genderizer.js";
 import Profile from "../models/profile.models.js";
+import { buildFiltersFromText, buildMongoQueryFromFilters } from "../utilis/nlQueryEngine.js";
 
 
 export const createProfile = async (req, res, next) => {
@@ -34,7 +35,6 @@ export const createProfile = async (req, res, next) => {
           name: checkExistingProfile.name,
           gender: checkExistingProfile.gender,
           gender_probability: checkExistingProfile.gender_probability,
-          sample_size: checkExistingProfile.sample_size,
           age: checkExistingProfile.age,
           age_group: checkExistingProfile.age_group,
           country_id: checkExistingProfile.country_id,
@@ -52,7 +52,6 @@ export const createProfile = async (req, res, next) => {
       name: cleanName,
       gender: genderPredicted.gender,
       gender_probability: genderPredicted.probability,
-      sample_size: genderPredicted.count,
       age: agePredicted.age,
       age_group: agePredicted.ageGroup,
       country_id: nationalityPredicted.countryId,
@@ -66,7 +65,6 @@ export const createProfile = async (req, res, next) => {
         name: newProfile.name,
         gender: newProfile.gender,
         gender_probability: newProfile.gender_probability,
-        sample_size: newProfile.sample_size,
         age: newProfile.age,
         age_group: newProfile.age_group,
         country_id: newProfile.country_id,
@@ -80,48 +78,131 @@ export const createProfile = async (req, res, next) => {
   }
 };
 
-
 export const getAllProfiles = async (req, res, next) => {
   try {
-    const { gender, country_id, age_group } = req.query;
-
-    const queryFilter = {};
-
-    if (gender) {
-      queryFilter.gender = { $regex: new RegExp(`^${gender}$`, "i") };
+    if (!req.query) {
+      const error = new Error("Invalid query parameters");
+      error.statusCode = 422;
+      throw error;
     }
 
-    if (country_id) {
-      queryFilter.country_id = { $regex: new RegExp(`^${country_id}$`, "i") };
+    const {
+      gender,
+      age_group,
+      country_id,
+      min_age,
+      max_age,
+      min_gender_probability,
+      min_country_probability,
+      sort_by = "created_at",
+      order = "asc",
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    /**
+     * Build MongoDB filter object
+     */
+    const query = {};
+
+    if (gender) query.gender = gender;
+    if (age_group) query.age_group = age_group;
+    if (country_id) query.country_id = country_id;
+
+    if (min_age || max_age) {
+      query.age = {};
+      if (min_age) query.age.$gte = Number(min_age);
+      if (max_age) query.age.$lte = Number(max_age);
     }
 
-    if (age_group) {
-      queryFilter.age_group = { $regex: new RegExp(`^${age_group}$`, "i") };
+    if (min_gender_probability) {
+      query.gender_probability = { $gte: Number(min_gender_probability) };
     }
 
-    const profiles = await Profile.find(queryFilter).sort({ createdAt: -1 });
+    if (min_country_probability) {
+      query.country_probability = { $gte: Number(min_country_probability) };
+    }
 
-    const cleanProfilesData = profiles.map((profile) => ({
-      id: profile.id,
-      name: profile.name,
-      gender: profile.gender,
-      age: profile.age,
-      age_group: profile.age_group,
-      country_id: profile.country_id,
-      created_at: profile.createdAt
-    }));
+    /**
+     * Pagination setup
+     */
+    const skip = (Number(page) - 1) * Number(limit);
 
-    res.status(200).json({
+    /**
+     * Sorting setup
+     */
+    const sort = {
+      [sort_by]: order === "desc" ? -1 : 1,
+    };
+
+    /**
+     * Execute query
+     */
+    const data = await Profile.find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(Number(limit));
+
+    /**
+     * Get total count for pagination
+     */
+    const total = await Profile.countDocuments(query);
+
+    return res.json({
       status: "success",
-      count: cleanProfilesData.length,
-      data: cleanProfilesData
+      page: Number(page),
+      limit: Number(limit),
+      total,
+      data,
     });
-
   } catch (error) {
     next(error);
   }
 };
 
+export const searchNaturalLanguage = async (req, res, next) => {
+  try {
+    const { q, page = 1, limit = 10 } = req.query;
+
+    if (!q) {
+      const error = new Error("Query parameter 'q' is required");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // Convert text → filters
+    const parsed = buildFiltersFromText(q);
+
+    if (!parsed) {
+      const error = new Error("Unable to interpret query");
+      error.statusCode = 422;
+      throw error;
+    }
+
+    // Build Mongo query
+    const mongoQuery = buildMongoQueryFromFilters(parsed);
+
+    // Pagination
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const [data, total] = await Promise.all([
+      Profile.find(mongoQuery).skip(skip).limit(limitNum),
+      Profile.countDocuments(mongoQuery),
+    ]);
+
+    return res.json({
+      status: "success",
+      page: pageNum,
+      limit: limitNum,
+      total,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getSingleProfile = async (req, res, next) => {
   try {
@@ -142,7 +223,6 @@ export const getSingleProfile = async (req, res, next) => {
         name: profile.name,
         gender: profile.gender,
         gender_probability: profile.gender_probability,
-        sample_size: profile.sample_size,
         age: profile.age,
         age_group: profile.age_group,
         country_id: profile.country_id,

@@ -8,7 +8,7 @@ export const userRedirect = (req, res, next) => {
 
     res.cookie("oauth_state", state, {
       httpOnly: true,
-      secure: false, // true in production
+      secure: true, // true in production
       sameSite: "lax",
     });
 
@@ -63,14 +63,14 @@ export const githubCallback = async (req, res, next) => {
 
     res.cookie("access_token", accessToken, {
       httpOnly: true,
-      secure: false, // true in production
+      secure: true, // true in production
       sameSite: "lax",
       maxAge: 3 * 60 * 1000, // 3 min
     });
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "lax",
       maxAge: 15 * 60 * 1000, // 15 min
     });
@@ -117,7 +117,7 @@ export const refreshTokenHandler = async (req, res) => {
 
     res.cookie("access_token", newAccessToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "lax",
       maxAge: 3 * 60 * 1000, // 3 min
     });

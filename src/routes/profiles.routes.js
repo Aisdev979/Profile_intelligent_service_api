@@ -5,19 +5,19 @@ import {
     getAllProfiles,
     getSingleProfile,
     searchNaturalLanguage
-} from "../controllers/genderPrediction.controllers.js"
+} from "../controllers/profiles.controllers.js"
 
-const genderPredictionRoute = Router();
+const profilesRoute = Router();
 
-genderPredictionRoute.route("/profiles")
+profilesRoute.route("/profiles")
   .post(createProfile)
   .get(getAllProfiles);
 
-genderPredictionRoute.route("/profiles/search")
+profilesRoute.route("/profiles/search")
   .get(searchNaturalLanguage);
 
-genderPredictionRoute.route("/profiles/:id")
+profilesRoute.route("/profiles/:id")
   .get(getSingleProfile)
   .delete(deleteProfile);
 
-export default genderPredictionRoute;
+export default profilesRoute;

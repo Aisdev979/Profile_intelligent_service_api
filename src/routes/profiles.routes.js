@@ -1,23 +1,26 @@
-import { Router } from "express"
-import {isAuthenticated, isAuthorized} from "../middlewares/auth.middlewares.js"
+import { Router } from "express";
+import { isAuthenticated, isAuthorized } from "../middlewares/auth.middlewares.js";
 import {
-    createProfile,
-    deleteProfile,
-    getAllProfiles,
-    getSingleProfile,
-    searchNaturalLanguage
-} from "../controllers/profiles.controllers.js"
+  createProfile,
+  deleteProfile,
+  getAllProfiles,
+  getSingleProfile,
+  searchNaturalLanguage,
+} from "../controllers/profiles.controllers.js";
 
 const profilesRoute = Router();
 
-profilesRoute.route("/profiles")
+profilesRoute
+  .route("/profiles")
   .post(isAuthenticated, isAuthorized("admin"), createProfile)
-  .get(isAuthenticated, isAuthorized("admin", "analyst), getAllProfiles);
+  .get(isAuthenticated, isAuthorized("admin", "analyst"), getAllProfiles);
 
-profilesRoute.route("/profiles/search")
+profilesRoute
+  .route("/profiles/search")
   .get(isAuthenticated, isAuthorized("admin", "analyst"), searchNaturalLanguage);
 
-profilesRoute.route("/profiles/:id")
+profilesRoute
+  .route("/profiles/:id")
   .get(isAuthenticated, isAuthorized("admin", "analyst"), getSingleProfile)
   .delete(isAuthenticated, isAuthorized("admin"), deleteProfile);
 

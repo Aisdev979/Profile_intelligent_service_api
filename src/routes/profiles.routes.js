@@ -1,4 +1,5 @@
 import { Router } from "express"
+import {isAuthenticated, isAuthorized} from "../middlewares/auth.middlewares.js"
 import {
     createProfile,
     deleteProfile,
@@ -10,14 +11,14 @@ import {
 const profilesRoute = Router();
 
 profilesRoute.route("/profiles")
-  .post(createProfile)
-  .get(getAllProfiles);
+  .post(isAuthenticated, isAuthorized("admin"), createProfile)
+  .get(isAuthenticated, isAuthorized("admin", "analyst), getAllProfiles);
 
 profilesRoute.route("/profiles/search")
-  .get(searchNaturalLanguage);
+  .get(isAuthenticated, isAuthorized("admin", "analyst"), searchNaturalLanguage);
 
 profilesRoute.route("/profiles/:id")
-  .get(getSingleProfile)
-  .delete(deleteProfile);
+  .get(isAuthenticated, isAuthorized("admin", "analyst"), getSingleProfile)
+  .delete(isAuthenticated, isAuthorized("admin"), deleteProfile);
 
 export default profilesRoute;

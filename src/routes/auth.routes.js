@@ -14,8 +14,8 @@ import {
 
 const authRoute = express.Router();
 
-authRoute.get("/auth/github", userRedirect);
-authRoute.get("/auth/github/callback", githubCallback);
+authRoute.get("/github", userRedirect);
+authRoute.get("/github/callback", githubCallback);
 
 authRoute.post("/refresh", verifyRefreshToken, refreshTokenHandler);
 

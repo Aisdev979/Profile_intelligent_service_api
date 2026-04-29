@@ -1,4 +1,4 @@
-mport express from "express";
+import express from "express";
 import {
 	  isAuthenticated,
 	  verifyRefreshToken,
@@ -10,7 +10,7 @@ import {
 	  githubCallback,
 	  refreshTokenHandler,
 	  logout,
-} from "../controllers/auth.controller.js";
+} from "../controllers/auth.controllers.js";
 
 const authRoute = express.Router();
 

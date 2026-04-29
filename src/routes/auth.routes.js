@@ -1,10 +1,25 @@
-import { Router } from "express";
+mport express from "express";
+import {
+	  isAuthenticated,
+	  verifyRefreshToken,
+	  verifyCSRF,
+} from "../middlewares/auth.middlewares.js";
 
-import { githubCallback, userRedirect } from "../controllers/auth.controllers.js";
+import {
+	  userRedirect,
+	  githubCallback,
+	  refreshTokenHandler,
+	  logout,
+} from "../controllers/auth.controller.js";
 
-const authRoute = Router();
+const authRoute = express.Router();
 
-authRoute.get("/github", userRedirect);
-authRoute.get("/github/callback", githubCallback);
+authRoute.get("/auth/github", userRedirect);
+authRoute.get("/auth/github/callback", githubCallback);
 
-export default authRoute;
+authRoute.post("/refresh", verifyRefreshToken, refreshTokenHandler);
+
+authRoute.post("/logout", isAuthenticated, verifyCSRF, logout);
+
+
+export default authRoute

@@ -12,7 +12,12 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // frontend URL
+    credentials: true, // 🔥 REQUIRED
+  })
+);
 app.use(express.json());
 
 app.use("/api", profilesRoute);
